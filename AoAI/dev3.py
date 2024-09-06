@@ -19,7 +19,10 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores.chroma import Chroma
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_community.document_loaders import UnstructuredURLLoader
-from langchain.chains import ConversationChain
+from dotenv import load_dotenv  # 追加
+
+# .env ファイルから環境変数を読み込む
+load_dotenv()
 
 # -----------------フィードバックを保存する関数-----------------
 def save_feedback(user_id, message_id, feedback):
@@ -39,27 +42,26 @@ def save_feedback(user_id, message_id, feedback):
 urls = "https://qiita.com/shun_sakamoto/items/7944d0ac4d30edf91fde"
 loader = WebBaseLoader(urls)
 documents = loader.load()
-embeddings = AzureOpenAIEmbeddings(model="embedding2",
-                                   azure_endpoint="https://scraping-test.openai.azure.com/",
-                                   api_key="adaa6041cc474ed28cbdde56a22483f3",
-                                   api_version="2024-02-15-preview",
-                                   openai_api_type='azure')
+embeddings = AzureOpenAIEmbeddings(
+    model="embedding2",
+    azure_endpoint=os.getenv("AZURE_ENDPOINT"),  # 環境変数を使用
+    api_key=os.getenv("AZURE_API_KEY"),          # 環境変数を使用
+    api_version=os.getenv("AZURE_API_VERSION"),  # 環境変数を使用
+    openai_api_type='azure'
+)
 vectorstore = Chroma.from_documents(documents, embeddings)
 index = UnstructuredURLLoader(urls=urls, vectorstore=vectorstore)
 
-# langchainのデバッグを有効化
-# langchain.debug = True
-
-# azureの情報
+# azureの情報（.envから読み込み）
 api_type = "azure"
-key = "adaa6041cc474ed28cbdde56a22483f3"
-version = "2024-02-15-preview"
-endpoint = "https://scraping-test.openai.azure.com/"
+key = os.getenv("AZURE_API_KEY")                 # 環境変数を使用
+version = os.getenv("AZURE_API_VERSION")         # 環境変数を使用
+endpoint = os.getenv("AZURE_ENDPOINT")           # 環境変数を使用
 
 # GPT-4モデルを使用するConversationChainを初期化
 model = AzureChatOpenAI(
     openai_api_version=version,
-    azure_deployment='assistant-2',
+    azure_deployment=os.getenv("AZURE_DEPLOYMENT"),  # 環境変数を使用
     azure_endpoint=endpoint,
     api_key=key
 )
