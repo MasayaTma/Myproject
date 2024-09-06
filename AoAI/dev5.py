@@ -18,12 +18,15 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores.chroma import Chroma
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_community.document_loaders import UnstructuredURLLoader
-from langchain.chains import ConversationChain
+from dotenv import load_dotenv
 import requests
+
+# .env ファイルから環境変数を読み込む
+load_dotenv()
 
 # Bing APIを使用する関数
 def web_search(query):
-    subscription_key = "86d2da5a63154596aec5f645075a7d61"
+    subscription_key = os.getenv("BING_SUBSCRIPTION_KEY")
     search_url = "https://api.bing.microsoft.com/v7.0/search"
     headers = {"Ocp-Apim-Subscription-Key": subscription_key}
     params = {"q": query, "textDecorations": True, "textFormat": "HTML"}
@@ -59,30 +62,29 @@ def save_feedback(user_id, message_id, feedback):
         json.dump(feedback_data, f, ensure_ascii=False)
 # -----------------フィードバックを保存する関数-----------------
 
-urls="https://qiita.com/shun_sakamoto/items/7944d0ac4d30edf91fde"
+urls = "https://qiita.com/shun_sakamoto/items/7944d0ac4d30edf91fde"
 loader = WebBaseLoader(urls)
 documents = loader.load()
-embeddings = AzureOpenAIEmbeddings(model="embedding2",
-                                   azure_endpoint="https://scraping-test.openai.azure.com/",
-                              api_key="adaa6041cc474ed28cbdde56a22483f3",
-                              api_version="2024-02-15-preview",
-                              openai_api_type='azure')
+embeddings = AzureOpenAIEmbeddings(
+    model="embedding2",
+    azure_endpoint=os.getenv("AZURE_ENDPOINT"),
+    api_key=os.getenv("AZURE_API_KEY"),
+    api_version=os.getenv("AZURE_API_VERSION"),
+    openai_api_type='azure'
+)
 vectorstore = Chroma.from_documents(documents, embeddings)
-index = UnstructuredURLLoader(urls=urls,vectorstore=vectorstore)
+index = UnstructuredURLLoader(urls=urls, vectorstore=vectorstore)
 
-# langchainのデバッグを有効化
-langchain.debug = True
-
-# azureの情報
+# azureの情報（.envから読み込み）
 api_type = "azure"
-key = "adaa6041cc474ed28cbdde56a22483f3"
-version = "2024-02-15-preview"
-endpoint = "https://scraping-test.openai.azure.com/"
+key = os.getenv("AZURE_API_KEY")
+version = os.getenv("AZURE_API_VERSION")
+endpoint = os.getenv("AZURE_ENDPOINT")
 
 # GPT-4モデルを使用するConversationChainを初期化
 model = AzureChatOpenAI(
     openai_api_version=version,
-    azure_deployment='assistant-2',
+    azure_deployment=os.getenv("AZURE_DEPLOYMENT"),
     azure_endpoint=endpoint,
     api_key=key
 )
@@ -151,7 +153,7 @@ conversation = ConversationChain(
     prompt=chat_prompt,
     llm=model,
     memory=conversation_memory,
-    )
+)
 
 # Gradioインターフェースの定義
 def gradio_chat(user_input, chat_history):
