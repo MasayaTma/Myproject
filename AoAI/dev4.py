@@ -9,15 +9,19 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain, create_history_aware_retriever
 from langchain_core.messages import HumanMessage, AIMessage
+from dotenv import load_dotenv
 
-# USER_AGENT環境変数を設定
+# Load environment variables from .env file
+load_dotenv()
+
+# Set USER_AGENT environment variable
 os.environ["USER_AGENT"] = "my-app"
 
-# Azureの情報
-api_type = "azure"
-api_key = "adaa6041cc474ed28cbdde56a22483f3"
-api_version = "2024-02-15-preview"
-azure_endpoint = "https://scraping-test.openai.azure.com/"
+# Retrieve Azure OpenAI credentials from environment variables
+api_type = os.getenv("API_TYPE")
+api_key = os.getenv("API_KEY")
+api_version = os.getenv("API_VERSION")
+azure_endpoint = os.getenv("AZURE_ENDPOINT")
 
 # URLから情報の取得
 loader = WebBaseLoader("https://learn.microsoft.com/ja-jp/training/paths/describe-azure-management-governance/")

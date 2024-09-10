@@ -14,17 +14,21 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
 )
+from dotenv import load_dotenv
 
-# langchainのデバッグを有効化
+# Load environment variables from .env file
+load_dotenv()
+
+# Enable langchain debugging
 langchain.debug = True
 
-# azureの情報
-api_type = "azure"
-key = "adaa6041cc474ed28cbdde56a22483f3"
-version = "2024-02-01"
-endpoint = "https://scraping-test.openai.azure.com/"
+# Retrieve Azure OpenAI credentials from environment variables
+api_type = os.getenv("API_TYPE")
+key = os.getenv("API_KEY")
+version = os.getenv("API_VERSION")
+endpoint = os.getenv("AZURE_ENDPOINT")
 
-# GPT-4モデルを使用するConversationChainを初期化
+# Initialize ConversationChain with GPT-4 model
 model = AzureChatOpenAI(
     openai_api_version=version,
     azure_deployment='assistant',
@@ -32,7 +36,7 @@ model = AzureChatOpenAI(
     api_key=key
 )
 
-# chat_historiesフォルダを作成（存在しない場合）
+# Create chat_histories folder if it doesn't exist
 os.makedirs("chat_histories", exist_ok=True)
 
 def load_conversation_memory(user_id):
@@ -71,11 +75,11 @@ def chat(user_input):
     assistant_response = conversation.predict(input=user_input)
     return assistant_response
 
-# 過去の会話履歴を読み込む
+# Load past conversation history
 user_id = "test_user_id"
 conversation_memory = load_conversation_memory(user_id)
 
-# ConversationChainを初期化
+# Initialize ConversationChain
 template = "あなたは親切で万能なアシスタントです。ユーザーの質問に丁寧な口調で答えてください。"
 chat_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(template),
@@ -89,7 +93,7 @@ conversation = ConversationChain(
     memory=conversation_memory,
 )
 
-# Gradioインターフェースの定義
+# Define Gradio interface
 def gradio_chat(user_input, chat_history):
     assistant_response = chat(user_input)
     chat_history.append((user_input, assistant_response))
