@@ -1,0 +1,11 @@
+mwclient
+mwparserfromhell
+tiktoken
+openai
+chromadb
+chroma-migrate
+pandas
+langchain
+gradio
+langchain_community
+langchain_openai
