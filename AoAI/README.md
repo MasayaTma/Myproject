@@ -27,12 +27,12 @@ BingAPIを使用しウェブ検索結果から質問に対する回答を生成�
    git clone https://github.com/MasayaTma/Myproject.git
    cd Myproject/AoAI
 2. 仮想環境を作成します。
-   python -m venv venv
+   ```python -m venv venv
    source venv/bin/activate  # Windowsの場合は `venv\Scripts\activate`
 3. 依存関係をインストールします。
-   pip install -r requirements.txt
+   ```pip install -r requirements.txt
 4. 環境変数を設定します。
-   AZURE_API_KEY=your_azure_api_key
+   ```AZURE_API_KEY=your_azure_api_key
    AZURE_ENDPOINT=your_azure_endpoint
    AZURE_API_VERSION=your_azure_api_version
    AZURE_DEPLOYMENT=your_azure_deployment
@@ -52,9 +52,9 @@ yfinance: Yahoo Financeから株価データを取得するためのライブラ
 ##　貢献
 1. フォークします。
 2. 新しいブランチを作成します。
-   git checkout -b feature/新機能
+   ```git checkout -b feature/新機能
 3. 変更をコミットします。
-   git commit -m 'Add 新機能'
+   ```git commit -m 'Add 新機能'
 4. プルリクエストを作成します。
 
 ## ライセンス
